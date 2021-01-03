@@ -53,9 +53,10 @@ COPY data /opt/spark/data
 ENV SPARK_HOME /opt/spark
 
 
+
+########### Reset to root to run installation tasks - Related to Python ########
 WORKDIR /
 
-# Reset to root to run installation tasks
 USER 0
 
 RUN mkdir ${SPARK_HOME}/python
@@ -74,17 +75,13 @@ RUN apt-get update && \
 COPY python/pyspark ${SPARK_HOME}/python/pyspark
 COPY python/lib ${SPARK_HOME}/python/lib
 
-
-
+### Python speific setting completes here ##############
 
 RUN useradd   -d /home/${spark_uid} ${spark_uid}
-
 WORKDIR /opt/spark/work-dir
 RUN chmod 777 /opt/spark/work-dir
 
 ENTRYPOINT [ "/opt/entrypoint.sh" ]
-
-
 
 # Specify the User that the actual main process will run as
 USER ${spark_uid}
