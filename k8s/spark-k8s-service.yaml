@@ -8,5 +8,5 @@ spec:
     app: afaque-spark
   ports:
     - protocol: TCP
-      port: 29413
+      port: 9000
   clusterIP: None

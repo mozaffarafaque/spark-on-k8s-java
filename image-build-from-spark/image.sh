@@ -23,9 +23,11 @@ cd spark-3.0.1-bin-hadoop2.7
 
 ./bin/docker-image-tool.sh \
     -r mozafaq/spark-on-k8s \
-    -t 1.0 \
+    -t 2.0 \
     -b java_image_tag=11 \
-    -u sparkusr \
     build
+
+
+docker tag mozafaq/spark-on-k8s/spark:2.0 mozafaq/spark-on-k8s:2.0 
 
 
