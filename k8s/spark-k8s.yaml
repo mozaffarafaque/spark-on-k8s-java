@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: default
+  namespace: spark
   name: afaque-spark-deployment
   labels:
     app: afaque-spark
@@ -18,7 +18,7 @@ spec:
       serviceAccountName: spark
       containers:
       - name: afaque-spark
-        image: mozafaq/sample-server-spark-k8:1.6
+        image: mozafaq/spark-on-k8s:3.1
         ports:
           - containerPort: 8888
         volumeMounts:
@@ -32,4 +32,4 @@ spec:
         - name: afaque-spark-pv
           persistentVolumeClaim:
             claimName: afaque-spark-pvc
-
+            

@@ -28,6 +28,14 @@ cd spark-3.0.1-bin-hadoop2.7
     build
 
 
+
+dev/make-distribution.sh -Pkubernetes -DskipTests
+
 docker tag mozafaq/spark-on-k8s/spark:2.0 mozafaq/spark-on-k8s:2.0 
+
+
+docker build -t spark-k8s:1.1 -f kubernetes/dockerfiles/spark/Dockerfile .
+
+
 
 
