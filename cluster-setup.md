@@ -2,7 +2,7 @@
 
 ## Summary
 
-This explains the k8s cluster setup on ubuntu
+This explains the k8s cluster setup on ubuntu. This document is all about the installation and cluster setup of kubernettes cluster.
 
 ### Reference documents
  - https://linuxconfig.org/how-to-install-kubernetes-on-ubuntu-20-04-focal-fossa-linux
@@ -14,81 +14,12 @@ This explains the k8s cluster setup on ubuntu
 ### On each Nodes (Master and Wrokers)
 
 ```
-   sudo apt update
-   sudo apt -y upgrade && sudo systemctl reboot
-   sudo apt install docker.io
-```
-
- Java installation
-
-Additional ones like git culr if required
-
-
-
-
-## Specific settings
-
-### Master 
-
-```
-   sudo kubeadm init --pod-network-cidr=10.244.0.0/16
-
-    rm -rf  $HOME/.kube
-    mkdir -p $HOME/.kube
-    sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-    sudo chown $(id -u):$(id -g) $HOME/.kube/config
-
-   kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-   kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/k8s-manifests/kube-flannel-rbac.yml
-```
-
-Just to chek if everyting is fine  
-
-``` 
-   kubectl get pods --all-namespaces
-   kubectl get deployments --all-namespaces
-   kubectl get nodes
-   kubectl cluster-info
- 
-```
-
-### Workers to join cluster
-
-First execute below on master
-
-```
-kubeadm token create --print-join-command
-```
-
-The command will be printed. Copy the command and execute on worker node that needs to join the cluster
-
-- Execute on workers as `sudo`
-
-Example:
-
-```
-sudo kubeadm join 172.31.80.10:6443 --token 7lux2p.808mhjv26gini5hv --discovery-token-ca-cert-hash sha256:a864cd3513d8d0649426830e7d41d192358119d451b51dbbeacc11d3d3cc14e2
-```
-
-Below should report all the worker nodes along with master
-
-```
-   kubectl get nodes
-```
-
-
-# Fresh from the start
-
-
-This document is all about the installation and cluster setup of kubernettes cluster 
-on ubuntu
-
-##  General setup
-
 sudo apt update
 sudo apt -y upgrade && sudo systemctl reboot
 sudo apt install openjdk-11-jdk
 sudo apt install vim git maven curl
+
+```
 
 ## Docker installation
 
@@ -132,71 +63,39 @@ sudo apt install -y kubelet kubeadm kubectl
 sudo apt install -y kubernetes-cni
 
 
+## Specific settings
 
-
-## Mast Wrorker specific configurations
-
-### Master
+### Master 
 
 Set name of the host
 ```
 sudo hostnamectl set-hostname test-k8s-master
 ```
 
-```
-sudo kubeadm init
-```
-
-Output from above command
 
 ```
-.....
-.....
-[kubelet-finalize] Updating "/etc/kubernetes/kubelet.conf" to point to a rotatable kubelet client certificate and key
-[addons] Applied essential addon: CoreDNS
-[addons] Applied essential addon: kube-proxy
+  sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 
-Your Kubernetes control-plane has initialized successfully!
-
-To start using your cluster, you need to run the following as a regular user:
-
+  rm -rf  $HOME/.kube
   mkdir -p $HOME/.kube
   sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
   sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-Alternatively, if you are the root user, you can run:
-
-  export KUBECONFIG=/etc/kubernetes/admin.conf
-
-You should now deploy a pod network to the cluster.
-Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
-  https://kubernetes.io/docs/concepts/cluster-administration/addons/
-
-Then you can join any number of worker nodes by running the following on each as root:
-
-kubeadm join 172.31.80.10:6443 --token gkgnrm.z8h7dwqaui55okyz \
-    --discovery-token-ca-cert-hash sha256:dcff06ba282a079cf0e606223883536b95eff73b9af7a5b0de9229b7cb638db5 
-```
-
-Run Below commands for actual start of nodes
-
-```
-  mkdir -p $HOME/.kube
-  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+  kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+  kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/k8s-manifests/kube-flannel-rbac.yml
 ```
 
 
-### Create pod network master
+Just to check if everyting is fine  
 
+``` 
+  kubectl get pods --all-namespaces
+  kubectl get deployments --all-namespaces
+  kubectl get nodes
+  kubectl cluster-info
 ```
-kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
-kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/k8s-manifests/kube-flannel-rbac.yml
-
-```
-
-### Worker
+### Workers to join cluster
 
 Set name of the host
 
@@ -204,20 +103,28 @@ Set name of the host
 sudo hostnamectl set-hostname test-k8s-worker-1
 ```
 
+First execute below on master
 
-Join master node by executing the command that was received in the output after execiting init on master
+```
+kubeadm token create --print-join-command
+```
 
-### Note
+
+#### Note
 If running on AWS then make sure that they are having the security group correctly set so that they are reachable
 
-Example
+The command will be printed. Copy the command and execute on worker node that needs to join the cluster
+
+- Execute on workers as `sudo`
+
+Example:
 
 ```
-sudo kubeadm join 172.31.80.10:6443 --token gkgnrm.z8h7dwqaui55okyz \
-    --discovery-token-ca-cert-hash sha256:dcff06ba282a079cf0e606223883536b95eff73b9af7a5b0de9229b7cb638db5
+sudo kubeadm join 172.31.80.10:6443 --token 7lux2p.808mhjv26gini5hv --discovery-token-ca-cert-hash sha256:a864cd3513d8d0649426830e7d41d192358119d451b51dbbeacc11d3d3cc14e2
 ```
 
+Below should report all the worker nodes along with `master`
 
-## Build
-git checkout branch-3.1
-dev/make-distribution.sh -Pkubernetes
+```
+   kubectl get nodes
+```
