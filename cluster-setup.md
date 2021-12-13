@@ -23,12 +23,15 @@ sudo apt install vim git maven curl
 
 ## Docker installation
 
+```
 sudo apt install docker.io
 sudo usermod -aG docker ubuntu
 sudo chmod 666 /var/run/docker.sock
 sudo service docker start
 docker version
 sudo systemctl enable docker
+
+```
 
 ## Kubernettes installation
 sudo apt install apt-transport-https 
